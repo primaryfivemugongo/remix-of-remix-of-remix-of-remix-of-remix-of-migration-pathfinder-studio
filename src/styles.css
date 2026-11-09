@@ -358,13 +358,8 @@
 .document-facts dd { margin:0; font-size:16px; font-weight:600; }
 .document-related { margin-top:40px; border-top:1px solid var(--catalog-border); padding-top:24px; }
 .document-related h2 { font-size:22px; font-weight:600; }
-.document-information { margin-top:24px; border-top:1px solid var(--catalog-border); }
-.document-information-section { border-color:var(--catalog-border); }
-.document-section-trigger { font-size:20px; font-weight:600; line-height:1.4; gap:16px; padding:18px 0; color:var(--foreground); }
-.document-question-trigger { font-size:16px; line-height:1.5; gap:16px; padding:16px 0; color:var(--foreground); }
-.document-question-trigger svg { width:18px; height:18px; }
-.document-question-answer { font-size:15px; line-height:1.7; color:var(--muted-foreground); }
-.document-information [data-slot],.document-information [data-state] { border-color:var(--catalog-border); }
+.document-information { margin-top:24px; border-top:1px solid var(--catalog-border); padding-top:18px; }
+.document-information-title { font-size:20px; font-weight:600; line-height:1.4; margin:0 0 16px; color:var(--foreground); }
 .document-detail dl > div { min-width:0; max-width:100%; }
 .document-detail dd { overflow-wrap:anywhere; }
 @media(max-width:575px) { .document-detail { padding:20px 16px; } .document-detail h1 { font-size:24px; } .document-facts > div { grid-template-columns:minmax(0,1fr); gap:4px; } }

@@ -1,4 +1,3 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import type { documentContent } from '@/lib/document-content';
 import { formatSize } from '@/lib/file-sizes';
 
@@ -13,25 +12,10 @@ export function DocumentInformation({ content, bytes }: { content: ReturnType<ty
     { label: 'Year', value: content.metadata.year },
     { label: 'Term', value: content.metadata.term },
   ].filter((fact): fact is { label: string; value: string } => Boolean(fact.value));
-  return <Accordion type="multiple" className="document-information">
-    <AccordionItem value="about" className="document-information-section">
-      <AccordionTrigger className="document-section-trigger">About this document</AccordionTrigger>
-      <AccordionContent>
-        <dl className="document-facts" aria-label="Document details">
-          {facts.map(({ label, value }) => <div key={label}><dt>{label}:</dt><dd>{value}</dd></div>)}
-        </dl>
-      </AccordionContent>
-    </AccordionItem>
-    {content.questions.length > 0 && <AccordionItem value="faqs" className="document-information-section">
-      <AccordionTrigger className="document-section-trigger">FAQs</AccordionTrigger>
-      <AccordionContent>
-        <Accordion type="single" collapsible>
-          {content.questions.map((item, index) => <AccordionItem value={`question-${index}`} key={item.question}>
-            <AccordionTrigger className="document-question-trigger">{item.question}</AccordionTrigger>
-            <AccordionContent className="document-question-answer">{item.answer}</AccordionContent>
-          </AccordionItem>)}
-        </Accordion>
-      </AccordionContent>
-    </AccordionItem>}
-  </Accordion>;
+  return <section className="document-information" aria-labelledby="document-information-title">
+    <h2 className="document-information-title" id="document-information-title">About this document</h2>
+    <dl className="document-facts" aria-label="Document details">
+      {facts.map(({ label, value }) => <div key={label}><dt>{label}:</dt><dd>{value}</dd></div>)}
+    </dl>
+  </section>;
 }
