@@ -11,8 +11,9 @@ export function repoFileUrl(repo: string, path: string) {
 
 export function treeToDocuments(repo: string, tree: { path: string; type: string }[]): ResourceRecord[] {
   return tree
-    .filter(entry => entry.type === 'blob' && isDocumentFile(entry.path))
-    .map(entry => ({ title: '', description: '', price: '', pdfUrl: repoFileUrl(repo, entry.path) }));
+    .filter(entry => entry.type === 'blob')
+    .map(entry => ({ title: '', description: '', price: '', pdfUrl: repoFileUrl(repo, entry.path) }))
+    .filter(item => isDocumentFile(item.pdfUrl));
 }
 
 export async function fetchRepoDocuments(repo: string): Promise<ResourceRecord[]> {
