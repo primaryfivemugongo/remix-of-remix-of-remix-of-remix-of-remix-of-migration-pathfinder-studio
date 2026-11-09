@@ -41,3 +41,7 @@
 
 ## Complete sitemap
 - [ ] Generate and verify one sitemap containing every document landing page plus class and category pages. Blocked: this app has no published or confirmed public domain; never substitute its preview URL or the GitHub document host.
+
+## Document information refinement
+- [ ] Move document facts beneath the viewer, remove the uploader line and use labelled facts instead of prose.
+- [ ] Start About and FAQs collapsed and verify opening/closing on desktop and phone.
