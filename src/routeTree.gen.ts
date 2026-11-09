@@ -17,6 +17,7 @@ import { Route as DisclaimerRouteImport } from './routes/disclaimer'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as DocSlugRouteImport } from './routes/doc.$slug'
+import { Route as MoreRepoRouteImport } from './routes/more.$repo'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +59,11 @@ const DocSlugRoute = DocSlugRouteImport.update({
   path: '/doc/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MoreRepoRoute = MoreRepoRouteImport.update({
+  id: '/more/$repo',
+  path: '/more/$repo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/doc/$slug': typeof DocSlugRoute
+  '/more/$repo': typeof MoreRepoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/doc/$slug': typeof DocSlugRoute
+  '/more/$repo': typeof MoreRepoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/doc/$slug': typeof DocSlugRoute
+  '/more/$repo': typeof MoreRepoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/doc/$slug'
+    | '/more/$repo'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/doc/$slug'
+    | '/more/$repo'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/doc/$slug'
+    | '/more/$repo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
   DocSlugRoute: typeof DocSlugRoute
+  MoreRepoRoute: typeof MoreRepoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/more/$repo': {
+      id: '/more/$repo'
+      path: '/more/$repo'
+      fullPath: '/more/$repo'
+      preLoaderRoute: typeof MoreRepoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
   DocSlugRoute: DocSlugRoute,
+  MoreRepoRoute: MoreRepoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
