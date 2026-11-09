@@ -1,0 +1,38 @@
+{
+  "name": "Fresh App",
+  "short_name": "Fresh App",
+  "description": "Fresh Teacher's Platform — educational resource library for lesson notes, schemes of work and past papers.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["education", "books"],
+  "shortcuts": [
+    { "name": "Primary Five Lesson Notes", "short_name": "P5 Notes", "url": "/PrimaryFiveLessonNotes.html", "icons": [{ "src": "/icons/icon-192.png?v=white-logo", "sizes": "192x192", "type": "image/png" }] },
+    { "name": "Baby Class Past Papers", "short_name": "Baby Papers", "url": "/BabyClassPastPapers.html", "icons": [{ "src": "/icons/icon-192.png?v=white-logo", "sizes": "192x192", "type": "image/png" }] }
+  ],
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#1b2437",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png?v=white-logo",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png?v=white-logo",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png?v=white-logo",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

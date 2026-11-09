@@ -1,0 +1,86 @@
+[
+  {
+    "capability": "code",
+    "source": "TanStack Start app",
+    "outcome": "migrate",
+    "status": "verified",
+    "next_action": ""
+  },
+  {
+    "capability": "catalog records",
+    "source": "bundled static JSON shards",
+    "outcome": "migrate",
+    "status": "verified",
+    "next_action": ""
+  },
+  {
+    "capability": "schema",
+    "source": "no database call sites detected",
+    "outcome": "not_applicable",
+    "status": "not_applicable",
+    "next_action": ""
+  },
+  {
+    "capability": "auth identities",
+    "source": "no authentication implementation detected",
+    "outcome": "not_applicable",
+    "status": "not_applicable",
+    "next_action": ""
+  },
+  {
+    "capability": "authorization",
+    "source": "public resource library",
+    "outcome": "not_applicable",
+    "status": "not_applicable",
+    "next_action": ""
+  },
+  {
+    "capability": "uploaded file bytes",
+    "source": "bundled media and external document URLs",
+    "outcome": "preserve",
+    "status": "verified",
+    "next_action": ""
+  },
+  {
+    "capability": "external providers",
+    "source": "Office/Google document viewers, WhatsApp, Font Awesome",
+    "outcome": "preserve",
+    "status": "preserved_verification_pending",
+    "next_action": "Office/Google viewers and WhatsApp destinations preserved; third-party service flows not fully exercised."
+  },
+  {
+    "capability": "public endpoints",
+    "source": "static catalog and document routes",
+    "outcome": "migrate",
+    "status": "verified",
+    "next_action": ""
+  },
+  {
+    "capability": "callbacks/webhooks/schedules",
+    "source": "none detected",
+    "outcome": "not_applicable",
+    "status": "not_applicable",
+    "next_action": ""
+  },
+  {
+    "capability": "secrets",
+    "source": "no required variable names detected",
+    "outcome": "not_applicable",
+    "status": "not_applicable",
+    "next_action": ""
+  },
+  {
+    "capability": "cutover",
+    "source": "new preview origin",
+    "outcome": "pending",
+    "status": "pending",
+    "next_action": "Publish when ready; existing source hosting was not changed."
+  },
+  {
+    "capability": "verification",
+    "source": "source tests and browser flows",
+    "outcome": "pending",
+    "status": "verified",
+    "next_action": ""
+  }
+]
