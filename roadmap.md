@@ -44,4 +44,4 @@
 
 ## Document information refinement
 - [x] Move document facts beneath the viewer, remove the uploader line and use labelled facts instead of prose.
-- [x] Start About and FAQs collapsed and verify opening/closing on desktop and phone.
+- [x] Keep "About this document" always visible and drop the FAQs section, then verify on desktop and phone.
