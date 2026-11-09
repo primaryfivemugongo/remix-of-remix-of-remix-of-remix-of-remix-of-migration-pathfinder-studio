@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { Element, domToReact, attributesToProps, htmlToDOM, type HTMLReactParserOptions, type DOMNode } from 'html-react-parser';
 
 // Parse each source fragment once; re-renders reuse the tree instead of re-parsing ~80KB of HTML.
@@ -118,7 +118,7 @@ export function LegacyPage({ data, fragments, moreDocuments }: { data: LegacyPag
     }
     if (classes.split(' ').includes('dropdown-menu') && node.parent instanceof Element) {
       const opened = dropdown === dropdownKey(node.parent);
-      const content = moreDocuments && isHoliday(node.parent) ? moreDocuments.map((item, index) => <li key={item.repo}>{index > 0 && <span className="divider" />}<a href={moreDocumentsHref(item.repo)}>{item.label}</a></li>) : children(node);
+      const content = moreDocuments && isHoliday(node.parent) ? moreDocuments.map((item, index) => <Fragment key={item.repo}>{index > 0 && <li className="divider" style={{ marginTop: 0, marginBottom: 0 }} />}<li><a href={moreDocumentsHref(item.repo)}>{item.label}</a></li></Fragment>) : children(node);
       return <ul {...props} hidden={!opened} className={`${classes} ${opened ? 'legacy-panel-open' : 'legacy-dropdown-closed'}`} onClick={event => { if (event.target instanceof window.Element && event.target.closest('a[href]')) setDropdown(null); }}>{content}</ul>;
     }
     const isToggle = node.name === 'a' && node.attribs['href'] === '#' && node.parent instanceof Element && node.parent.children.some(child => child instanceof Element && ['ul', 'div'].includes(child.name));

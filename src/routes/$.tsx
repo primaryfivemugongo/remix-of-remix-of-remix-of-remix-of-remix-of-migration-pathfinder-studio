@@ -7,6 +7,9 @@ import legacyManifest from '@/data/legacy/manifest.json';
 import type { LegacyPageData } from '@/lib/legacy-pages';
 import { resolveDocuments, type DocumentShard, type StaticPage } from '@/lib/static-catalog';
 import { useRouteStylesheets } from '@/lib/route-stylesheets';
+import { MORE_DOCUMENTS, moreDocumentsClass } from '@/data/more-documents';
+
+const moreFor = (path: string) => { const key = moreDocumentsClass(path); return key ? MORE_DOCUMENTS[key] : undefined; };
 
 const resourceStylesheets = ['bootstrap.min.css', 'font-awesome.css', 'flipbook.style.css', 'footer.css'].map(file => `/resource-source/css/${file}`);
 
@@ -68,7 +71,7 @@ function LegacyResource() {
   const result = Route.useLoaderData();
   const ready = useRouteStylesheets(result.kind === 'legacy' ? result.data.links : resourceStylesheets);
   const page = result.kind === 'legacy'
-    ? <LegacyPage key={result.path} data={result.data} fragments={result.fragments} />
+    ? <LegacyPage key={result.path} data={result.data} fragments={result.fragments} moreDocuments={moreFor(result.path)} />
     : <ResourcePage key={result.path} data={result.data} />;
   return (
     <>
