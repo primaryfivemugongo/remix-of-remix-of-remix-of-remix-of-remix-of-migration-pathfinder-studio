@@ -37,3 +37,4 @@ use the editor.
 - Track visible browsing time in session storage and installation evidence in local storage so navigation does not restart the offer delay and completed installs suppress future offers.
 - Generate document overviews, quick facts and search metadata through one browser-safe static-catalog helper; omit unknown facts and avoid claims about file contents, pricing or curriculum not supported by the record.
 - Keep temporary import inspection screenshots and browser captures outside the repository; preserve catalog-source fixtures because regression tests compare original records and ordering.
+- Class "More Documents" dropdowns list Fresh-Teacher GitHub repos from one static map and load repo files in the browser from the public GitHub tree API; this keeps the catalog static and avoids a server rate-limit bottleneck.
