@@ -39,15 +39,18 @@ export async function loadDocument(slug: string, source?: string) {
 export type DocumentData = NonNullable<Awaited<ReturnType<typeof loadDocument>>>;
 /** Documents listed on "More Documents" pages come straight from GitHub, so they are not in the static index. */
 async function loadRepoDocument(key: string, source?: string) {
-  const repoSlug = source?.match(/^more\/([^/?#]+)$/)?.[1];
-  if (!repoSlug) return null;
   const { findMoreDocumentsRepo } = await import('@/data/more-documents');
-  const repo = findMoreDocumentsRepo(repoSlug);
-  if (!repo) return null;
-  const { fetchRepoDocuments } = await import('./github-repo-documents');
-  let related: ResourceRecord[];
-  try { related = await fetchRepoDocuments(repo.repo); } catch { return null; }
-  const item = related.find(candidate => documentSlug(candidate).startsWith(`${key}-`));
-  if (!item) return null;
-  return { item, path: `more/${repoSlug}`, category: repo.label, related, slug: documentSlug(item) };
+  const { fetchRepoDocuments, cachedRepos } = await import('./github-repo-documents');
+  const requested = source?.match(/^more\/([^/?#]+)$/)?.[1];
+  // Without a source (shared link, refresh), check the folders already saved in this browser.
+  const candidates = requested ? [requested] : cachedRepos();
+  for (const repoSlug of candidates) {
+    const repo = findMoreDocumentsRepo(repoSlug);
+    if (!repo) continue;
+    let related: ResourceRecord[];
+    try { related = await fetchRepoDocuments(repo.repo); } catch { continue; }
+    const item = related.find(candidate => documentSlug(candidate).startsWith(`${key}-`));
+    if (item) return { item, path: `more/${repo.repo}`, category: repo.label, related, slug: documentSlug(item) };
+  }
+  return null;
 }
