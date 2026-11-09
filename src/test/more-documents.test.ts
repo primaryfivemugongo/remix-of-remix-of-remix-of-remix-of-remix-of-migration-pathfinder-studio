@@ -16,6 +16,10 @@ describe('More Documents menu', () => {
   });
   it('builds document links from the repo files', () => {
     const docs = treeToDocuments('s5-past-papers', [{ path: 'BIO 1.pdf', type: 'blob' }, { path: 'README.md', type: 'blob' }]);
-    expect(docs.map(d => d.pdfUrl)).toEqual(['https://fresh-teacher.github.io/s5-past-papers/BIO 1.pdf']);
+    expect(docs.map(d => d.pdfUrl)).toEqual(['https://fresh-teacher.github.io/s5-past-papers/BIO%201.pdf']);
+  });
+  it('serves files hidden by GitHub Pages from raw GitHub with # encoded', () => {
+    const docs = treeToDocuments('p5', [{ path: '#CREATIVE P5.pdf', type: 'blob' }]);
+    expect(docs[0]?.pdfUrl).toBe('https://raw.githubusercontent.com/Fresh-Teacher/p5/HEAD/%23CREATIVE%20P5.pdf');
   });
 });

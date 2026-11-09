@@ -26,7 +26,7 @@ export function DocumentDetail({ data, context }: { data: DocumentData; context:
       await openResourceViewer(element, item, false);
     } catch { void import('@/lib/viewer-loading').then(m => m.hideViewerLoading()); setViewerError('The file viewer could not load. You can still download the file.'); }
   };
-  return <main className="document-detail"><Button asChild variant="source" size="source" className="document-back"><Link to="/$" params={{ _splat: data.path }}><ArrowLeft size={18} />{data.category}</Link></Button>
+  return <main className="document-detail"><Button asChild variant="source" size="source" className="document-back"><Link {...(data.path.startsWith('more/') ? { to: '/more/$repo' as const, params: { repo: data.path.slice(5) } } : { to: '/$' as const, params: { _splat: data.path } })}><ArrowLeft size={18} />{data.category}</Link></Button>
     <section className="document-overview"><p className="document-eyebrow">Fresh Teacher · {data.item.description}</p><h1>{resourceTitle(data.item)}</h1><dl aria-label="Document quick facts">{[...content.facts, ...(bytes != null ? [{ label: 'Size', value: formatSize(bytes) }] : [])].map(({ label, value }) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
       <div className="dg-card-actions"><DocumentDownload item={data.item} /><DocumentShare item={data.item} /><a className="document-original" href={data.item.pdfUrl} target="_blank" rel="noopener noreferrer">Open original file</a></div>
     </section>
