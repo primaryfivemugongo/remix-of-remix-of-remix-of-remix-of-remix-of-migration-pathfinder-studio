@@ -20,7 +20,7 @@ export async function loadDocument(slug: string, source?: string) {
   if (!/^[a-f0-9]{16}$/.test(key)) return null;
   const get = indices[`../data/catalog/document-index/${key.slice(0, 2)}.json`];
   const entry = get ? (await get()).default[key] : undefined;
-  if (!entry) return null;
+  if (!entry) return loadRepoDocument(key, source);
   const item = (await shard(entry.id.slice(0, 2)))[entry.id];
   if (!item) throw new Error('Missing document');
   if (!isDocumentFile(item.pdfUrl)) return null;
@@ -37,3 +37,17 @@ export async function loadDocument(slug: string, source?: string) {
   return { item, path: origin.path ?? entry.path, category: page.title, related: siblings, slug: documentSlug(item) };
 }
 export type DocumentData = NonNullable<Awaited<ReturnType<typeof loadDocument>>>;
+/** Documents listed on "More Documents" pages come straight from GitHub, so they are not in the static index. */
+async function loadRepoDocument(key: string, source?: string) {
+  const repoSlug = source?.match(/^more\/([^/?#]+)$/)?.[1];
+  if (!repoSlug) return null;
+  const { findMoreDocumentsRepo } = await import('@/data/more-documents');
+  const repo = findMoreDocumentsRepo(repoSlug);
+  if (!repo) return null;
+  const { fetchRepoDocuments } = await import('./github-repo-documents');
+  let related: ResourceRecord[];
+  try { related = await fetchRepoDocuments(repo.repo); } catch { return null; }
+  const item = related.find(candidate => documentSlug(candidate).startsWith(`${key}-`));
+  if (!item) return null;
+  return { item, path: `more/${repoSlug}`, category: repo.label, related, slug: documentSlug(item) };
+}

@@ -11,7 +11,13 @@ import { documentSlug } from '@/lib/document-metadata';
 export function DocumentShare({ item }: { item: ResourceRecord }) {
   const [copied, setCopied] = useState(false);
   const title = resourceTitle(item);
-  const link = () => new URL(`/doc/${documentSlug(item)}`, window.location.origin).href;
+  const link = () => {
+    const url = new URL(`/doc/${documentSlug(item)}`, window.location.origin);
+    const here = window.location.pathname.replace(/^\//, '');
+    const source = here.startsWith('more/') ? here : new URLSearchParams(window.location.search).get('source');
+    if (source?.startsWith('more/')) url.searchParams.set('source', source);
+    return url.href;
+  };
   const open = (url: string) => window.open(url, '_blank', 'noopener,noreferrer');
   const enc = encodeURIComponent;
   const copy = async () => {

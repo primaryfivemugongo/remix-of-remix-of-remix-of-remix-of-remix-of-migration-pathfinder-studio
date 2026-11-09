@@ -22,7 +22,7 @@ export async function fetchRepoDocuments(repo: string): Promise<ResourceRecord[]
     const cached = sessionStorage.getItem(cacheKey);
     if (cached) return JSON.parse(cached) as ResourceRecord[];
   } catch { /* storage unavailable */ }
-  const response = await fetch(`https://api.github.com/repos/${OWNER}/${encodeURIComponent(repo)}/git/trees/HEAD?recursive=1`, { headers: { Accept: 'application/vnd.github+json' } });
+  const response = await fetch(`https://api.github.com/repos/${OWNER}/${encodeURIComponent(repo)}/git/trees/HEAD?recursive=1`, { headers: { Accept: 'application/vnd.github+json', ...(typeof window === 'undefined' ? { 'User-Agent': 'fresh-teacher-library' } : {}) } });
   if (!response.ok) throw new Error(`GitHub responded ${response.status}`);
   const body = await response.json() as { tree?: { path: string; type: string }[] };
   const items = treeToDocuments(repo, body.tree ?? []);
