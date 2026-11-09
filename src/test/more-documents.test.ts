@@ -20,6 +20,6 @@ describe('More Documents menu', () => {
   });
   it('serves files hidden by GitHub Pages from raw GitHub with # encoded', () => {
     const docs = treeToDocuments('p5', [{ path: '#CREATIVE P5.pdf', type: 'blob' }]);
-    expect(docs[0].pdfUrl).toBe('https://raw.githubusercontent.com/Fresh-Teacher/p5/HEAD/%23CREATIVE%20P5.pdf');
+    expect(docs[0]?.pdfUrl).toBe('https://raw.githubusercontent.com/Fresh-Teacher/p5/HEAD/%23CREATIVE%20P5.pdf');
   });
 });
