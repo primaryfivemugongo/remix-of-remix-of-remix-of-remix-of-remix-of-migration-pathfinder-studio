@@ -126,6 +126,9 @@ declare module "@tanstack/react-router" {
   }
 }
 
+// After a new deploy, old hashed chunks disappear; reload once (per 30s) to fetch the fresh build.
+const staleChunkReloadScript = `(function(){var K='ft-chunk-reload';function r(){try{var t=+sessionStorage.getItem(K)||0;if(Date.now()-t<30000)return;sessionStorage.setItem(K,String(Date.now()));}catch(e){}location.reload();}window.addEventListener('vite:preloadError',function(e){e.preventDefault();r();});window.addEventListener('unhandledrejection',function(e){var m=String(e.reason&&e.reason.message||e.reason||'');if(/Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(m))r();});})();`;
+
 function RootShell({ children }: { children: ReactNode }) {
   const importedDocument = useImportedMatches({ select: matches => matches.at(-1)?.staticData.importedDocument });
   return (
@@ -133,6 +136,7 @@ function RootShell({ children }: { children: ReactNode }) {
       <head>
         <style href="site-import-inline" precedence="imported-inline">{"@layer imported-inline;"}</style>
         <script dangerouslySetInnerHTML={{ __html: earlyTapQueueScript }} />
+        <script dangerouslySetInnerHTML={{ __html: staleChunkReloadScript }} />
         <HeadContent />
       </head>
       <body {...importedDocument?.body}>
