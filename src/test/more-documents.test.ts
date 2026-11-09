@@ -4,10 +4,10 @@ import { treeToDocuments } from '@/lib/github-repo-documents';
 
 describe('More Documents menu', () => {
   it('names P5 repo as Mixed P5 Documents', () => {
-    expect(MORE_DOCUMENTS.p5).toContainEqual({ repo: 'p5', label: 'Mixed P5 Documents' });
+    expect(MORE_DOCUMENTS['p5']).toContainEqual({ repo: 'p5', label: 'Mixed P5 Documents' });
   });
   it('names s5-past-papers as Mixed S5 Past Papers', () => {
-    expect(MORE_DOCUMENTS.s5).toContainEqual({ repo: 's5-past-papers', label: 'Mixed S5 Past Papers' });
+    expect(MORE_DOCUMENTS['s5']).toContainEqual({ repo: 's5-past-papers', label: 'Mixed S5 Past Papers' });
   });
   it('maps class pages to their class', () => {
     expect(moreDocumentsClass('p5.html')).toBe('p5');

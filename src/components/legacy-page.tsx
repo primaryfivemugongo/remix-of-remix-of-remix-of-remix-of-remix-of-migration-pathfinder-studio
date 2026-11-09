@@ -16,7 +16,7 @@ import repairs from '@/styles/legacy-repairs.css?raw';
 import { DocumentSearchInput } from '@/components/document-search-input';
 import { moreDocumentsHref, type MoreDocumentsRepo } from '@/data/more-documents';
 
-export function LegacyPage({ data, fragments, moreDocuments }: { data: LegacyPageData; fragments: Record<string, string>; moreDocuments?: MoreDocumentsRepo[] }) {
+export function LegacyPage({ data, fragments, moreDocuments }: { data: LegacyPageData; fragments: Record<string, string>; moreDocuments?: MoreDocumentsRepo[] | undefined }) {
   const [query, setQuery] = useState('');
   const [greeting, setGreeting] = useState('');
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
