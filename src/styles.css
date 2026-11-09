@@ -503,3 +503,8 @@ a, button, [role="button"], summary, label { touch-action: manipulation; -webkit
 .ftp-card .ftp-appchip span { display: block; font-size: .75rem; color: color-mix(in oklab, var(--popup-ink) 60%, transparent); }
 .ftp-card .ftp-hint { margin: 12px 0 0; padding: 8px 12px; border-radius: 12px; background: var(--secondary); font-size: .75rem; line-height: 1.5; color: var(--popup-ink); }
 @media (min-width: 640px) { .ftp-wrap, .ftp-backdrop { padding-bottom: 24px; } }
+
+/* Remove legacy blank line breaks above document listings */
+.legacy-page > br,
+.legacy-page > .container > br { display: none; }
+.legacy-page .dg-search { margin-top: 0.5rem; }
