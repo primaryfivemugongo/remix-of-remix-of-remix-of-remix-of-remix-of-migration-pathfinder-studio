@@ -1,6 +1,6 @@
 // Compressed folders are listed alongside documents and open as downloads.
 export const archiveExtensions = ['zip', 'rar', '7z', 'tar', 'gz', 'tgz', 'bz2', 'xz', 'zipx'];
-const documentExtensions = new Set(['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'pps', 'ppsx', 'odt', 'ods', 'odp', 'rtf', 'txt', 'csv', ...archiveExtensions]);
+const documentExtensions = new Set(['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'pps', 'ppsx', 'odt', 'ods', 'odp', 'rtf', 'txt', ...archiveExtensions]);
 
 export function documentExtension(url: string) {
   try {

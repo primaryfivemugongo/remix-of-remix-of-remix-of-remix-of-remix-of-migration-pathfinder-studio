@@ -14,7 +14,8 @@ it('uses the uploaded PowerPoint placeholder for presentations and slideshows', 
   for (const extension of ['ppt', 'pptx', 'pps', 'ppsx']) expect(documentPlaceholder(`https://example.org/lesson.${extension}`)?.original_filename).toBe('powerpoint.png');
 });
 it('retains a generic fallback for other formats', () => {
-  expect(documentPlaceholder('https://example.org/lesson.txt')).toBeNull();
+  expect(documentPlaceholder('https://example.org/lesson.txt')?.original_filename).toBe('txt.png');
+  expect(documentPlaceholder('https://example.org/lesson.rtf')?.original_filename).toBe('rtf.png');
 });
 it('uses the zipped-folder placeholder for compressed files', () => {
   for (const extension of ['zip', 'rar', '7z', 'tar', 'gz']) expect(documentPlaceholder(`https://example.org/notes.${extension}`)?.original_filename).toBe('archive.jpeg');
