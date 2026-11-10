@@ -520,3 +520,5 @@ a, button, [role="button"], summary, label { touch-action: manipulation; -webkit
 .documents-skeleton__search, .documents-skeleton__thumb, .documents-skeleton__line { animation: documents-skeleton-pulse 1.4s ease-in-out infinite; }
 @keyframes documents-skeleton-pulse { 50% { opacity: 0.5; } }
 @media (prefers-reduced-motion: reduce) { .documents-skeleton__search, .documents-skeleton__thumb, .documents-skeleton__line { animation: none; } }
+.documents-skeleton-overlay { position: absolute; inset: 0 0 auto 0; z-index: 1; background: var(--background); }
+.library-content { position: relative; }

@@ -62,8 +62,8 @@ function MoreDocumentsPage() {
   return (
     <>
       {!ready && <div className="route-progress" role="progressbar" aria-label="Loading page" />}
-      {!ready && <DocumentsSkeleton />}
-      <div className={ready ? 'route-fade route-fade--in' : 'route-fade'} hidden={!ready}>
+      {!ready && <div className="documents-skeleton-overlay"><DocumentsSkeleton /></div>}
+      <div className={ready ? 'route-fade route-fade--in' : 'route-fade'}>
         <LegacyPage key={result.repo} data={result.data} fragments={result.fragments} />
       </div>
     </>

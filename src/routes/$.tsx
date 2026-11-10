@@ -79,8 +79,8 @@ function LegacyResource() {
   return (
     <>
       {!ready && <div className="route-progress" role="progressbar" aria-label="Loading page" />}
-      {!ready && <DocumentsSkeleton />}
-      <div className={ready ? 'route-fade route-fade--in' : 'route-fade'} hidden={!ready}>{page}</div>
+      {!ready && <div className="documents-skeleton-overlay"><DocumentsSkeleton /></div>}
+      <div className={ready ? 'route-fade route-fade--in' : 'route-fade'}>{page}</div>
     </>
   );
 }
