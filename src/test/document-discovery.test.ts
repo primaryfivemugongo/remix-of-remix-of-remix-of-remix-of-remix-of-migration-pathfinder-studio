@@ -52,12 +52,12 @@ describe('Document discovery rules', () => {
     expect(result?.related.length).toBeGreaterThan(12);
   });
   it('selects a flipbook for PDFs', () => { expect(documentViewer(maths.pdfUrl).kind).toBe('pdf'); });
-  it.each(['ini', 'exe', 'mp3', 'mp4', 'png'])('hides non-document %s files from search', extension => {
+  it.each(['ini', 'exe', 'mp3', 'mp4', 'png', 'csv', 'html'])('hides non-document %s files from search', extension => {
     const nonDocument = { ...maths, pdfUrl: `https://fresh-teacher.github.io/desktop.${extension}` };
     expect(isDocumentFile(nonDocument.pdfUrl)).toBe(false);
     expect(filterResources([maths, nonDocument], '')).toEqual([maths]);
   });
-  it.each(['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'odt', 'ods', 'odp', 'rtf', 'csv', 'txt'])('keeps %s documents', extension => { expect(isDocumentFile(`https://fresh-teacher.github.io/lesson.${extension}`)).toBe(true); });
+  it.each(['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'odt', 'ods', 'odp', 'rtf', 'txt'])('keeps %s documents', extension => { expect(isDocumentFile(`https://fresh-teacher.github.io/lesson.${extension}`)).toBe(true); });
   it('preserves captured PDF filenames containing a literal hash', () => { expect(documentViewer('https://fresh-teacher.github.io/p6/P.6#CREATIVE PRINTERS SCIENCE.pdf').kind).toBe('pdf'); });
   it('does not expose system-file detail pages', async () => { expect(await loadDocument(documentSlug({ ...maths, pdfUrl: 'https://fresh-teacher.github.io/baby/desktop.ini' }))).toBeNull(); });
   it('matches the catalog flip style', () => { expect(flipbookOptions(maths.pdfUrl)).toMatchObject({ pdfUrl: maths.pdfUrl, viewMode: 'webgl', singlePageMode: false, btnPrev: { enabled: true }, btnNext: { enabled: true } }); });
