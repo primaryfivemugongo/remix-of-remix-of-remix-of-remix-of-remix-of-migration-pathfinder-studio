@@ -1,3 +1,4 @@
+import { DocumentsSkeleton } from '@/components/documents-skeleton';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { LegacyPage } from '@/components/legacy-page';
 import legacyManifest from '@/data/legacy/manifest.json';
@@ -50,6 +51,8 @@ export const Route = createFileRoute('/more/$repo')({
       links: (loaderData?.data.links ?? []).map(href => ({ rel: 'stylesheet', href })),
     };
   },
+  pendingComponent: DocumentsSkeleton,
+  pendingMs: 0,
   component: MoreDocumentsPage,
 });
 
@@ -59,6 +62,7 @@ function MoreDocumentsPage() {
   return (
     <>
       {!ready && <div className="route-progress" role="progressbar" aria-label="Loading page" />}
+      {!ready && <div className="documents-skeleton-overlay"><DocumentsSkeleton /></div>}
       <div className={ready ? 'route-fade route-fade--in' : 'route-fade'}>
         <LegacyPage key={result.repo} data={result.data} fragments={result.fragments} />
       </div>
