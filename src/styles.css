@@ -409,12 +409,13 @@
 /* Legacy icon fonts are unavailable; render every .fa icon with the shared Font Awesome 6 set. */
 .fa { font-family: "Font Awesome 6 Free" !important; font-weight: 900 !important; font-style: normal; }
 .fa.fa-android, .fa.fa-whatsapp, .fa.fa-facebook, .fa.fa-youtube, .fa.fa-twitter, .fa.fa-instagram { font-family: "Font Awesome 6 Brands" !important; font-weight: 400 !important; }
-.viewer-loading-overlay { position:fixed; inset:0; z-index:2147483000; display:grid; place-items:center; background:rgb(0 0 0 / 0.35); pointer-events:none; }
+.viewer-loading-overlay { position:fixed; inset:0; z-index:2147483647; display:grid; place-items:center; background:var(--background); pointer-events:none; }
 .viewer-loading-overlay .logo-loader { width:72px; height:72px; border-radius:50%; background:#fff; box-shadow:0 2px 12px rgb(0 0 0 / 0.3); }
 .viewer-loading-overlay .logo-loader-ring { animation:logo-loader-turn 1s linear infinite, logo-loader-ring-colors 4s linear infinite; }
-.flipbook-preloader { display:none !important; }
+.flipbook-preloader { background:var(--background); }
+.flipbook-preloader .cssload-speeding-wheel { border-color:var(--border); border-left-color:var(--primary); border-right-color:var(--primary); }
 .document-reader-frame { position:relative; }
-.document-reader-loading { position:absolute; inset:0; display:grid; place-items:center; pointer-events:none; }
+.document-reader-loading { position:absolute; inset:0; display:grid; place-items:center; background:var(--background); pointer-events:none; }
 .document-reader-loading .logo-loader { border-radius:50%; background:#fff; box-shadow:0 2px 12px rgb(0 0 0 / 0.2); }
 .document-reader-loading .logo-loader-ring { animation:logo-loader-turn 1s linear infinite, logo-loader-ring-colors 4s linear infinite; }
 .document-reader-expanded .document-reader-frame,.document-reader:fullscreen .document-reader-frame { flex:1; min-height:0; display:flex; flex-direction:column; }

@@ -69,7 +69,7 @@ async function openViewer(element: HTMLElement, item: ResourceRecord, allowPageE
   installDownloadHandler();
   if (!element.dataset['viewerReady']) {
     button.flipBook({
-      pdfUrl, lightBox: true, layout: 3, lightboxBackground: 'rgb(28, 30, 34)',
+      pdfUrl, lightBox: true, layout: 3, lightboxBackground: getComputedStyle(document.documentElement).getPropertyValue('--muted').trim(),
       currentPage: { vAlign: 'bottom', hAlign: 'left', title: 'Go to page' },
       btnFirst: { enabled: true, title: 'First page', hideOnMobile: true }, btnLast: { enabled: true, title: 'Last page', hideOnMobile: true },
       btnSearch: { enabled: true, title: 'Search document' }, btnSelect: { enabled: false },

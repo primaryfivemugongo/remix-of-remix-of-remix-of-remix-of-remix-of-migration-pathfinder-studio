@@ -1,4 +1,4 @@
-import { pdfRenderSignalScript } from '@/lib/pdf-render-signal';
+import { readerIsReady, readerReadyScript } from '@/lib/reader-readiness';
 import { useEffect, useRef, useState } from 'react';
 import { BookOpen, ExternalLink, Maximize, Minimize, RotateCcw, Rows3 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -10,9 +10,6 @@ import { resourceTitle, type ResourceRecord } from '@/lib/resources';
 import { LogoLoader } from './logo-loader';
 import media from '@/data/resource-media.json';
 
-// Tells the parent when the first page has rendered so the shared logo loader can be removed.
-const readyScript = `<script>(function(){var t0=Date.now(),seen=0;var i=setInterval(function(){var st=document.getElementById('reader-status');var failed=st&&!st.hidden&&/unavailable/i.test(st.textContent||'');var vertical=document.querySelector('[data-rendered="true"]');var flip=window.__pdfPageRendered&&![].some.call(document.querySelectorAll('.flipbook-preloader'),function(p){return p.getClientRects().length>0&&getComputedStyle(p).display!=='none'});if(flip&&!seen)seen=Date.now();if(vertical||failed||(seen&&Date.now()-seen>300)||Date.now()-t0>30000){clearInterval(i);parent.postMessage({type:'sharebility:ready'},'*')}},100)})();</script>`;
-
 export function DocumentViewer({ item }: { item: ResourceRecord }) {
   const viewer = documentViewer(item.pdfUrl);
   const [text, setText] = useState('');
@@ -21,14 +18,23 @@ export function DocumentViewer({ item }: { item: ResourceRecord }) {
   const [revision, setRevision] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const [frameLoading, setFrameLoading] = useState(true);
-  useEffect(() => { setFrameLoading(true); }, [mode, revision, item.pdfUrl]);
-  useEffect(() => {
-    const ready = (event: MessageEvent) => { if (event.source === frame.current?.contentWindow && (event.data as { type?: unknown })?.type === 'sharebility:ready') setFrameLoading(false); };
-    window.addEventListener('message', ready);
-    return () => window.removeEventListener('message', ready);
-  }, []);
   const reader = useRef<HTMLDivElement>(null);
   const frame = useRef<HTMLIFrameElement>(null);
+  useEffect(() => {
+    setFrameLoading(true);
+    const check = () => {
+      try {
+        const doc = frame.current?.contentDocument;
+        const win = frame.current?.contentWindow as (Window & { __readerReady?: boolean }) | null;
+        if (win?.__readerReady || (doc && readerIsReady(doc))) setFrameLoading(false);
+      } catch { /* Third-party Office previews are signalled by iframe onLoad. */ }
+    };
+    const ready = (event: MessageEvent) => { if (event.source === frame.current?.contentWindow && (event.data as { type?: unknown })?.type === 'sharebility:ready') setFrameLoading(false); };
+    window.addEventListener('message', ready);
+    check();
+    const interval = window.setInterval(check, 50);
+    return () => { window.removeEventListener('message', ready); window.clearInterval(interval); };
+  }, [mode, revision, item.pdfUrl]);
   const downloadSource = viewer.kind === 'pdf' ? viewer.src : '';
   useEffect(() => {
     const change = () => setExpanded(document.fullscreenElement === reader.current);
@@ -70,8 +76,8 @@ export function DocumentViewer({ item }: { item: ResourceRecord }) {
     const pdfSrc = viewer.kind === 'pdf' ? viewer.src : item.pdfUrl;
     const options = JSON.stringify({ ...flipbookOptions(pdfSrc), assets: { preloader: media['images/preloader.jpg'], overlay: media['images/overlay.png'], flipMp3: media['mp3/turnPage.mp3'], spinner: media['images/spinner.gif'] } }).replace(/</g, '\\u003c');
     const escapedUrl = pdfSrc.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const verticalHtml = `<!doctype html><html class="vertical-reader"><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/viewer-frame.css"></head><body data-pdf-url="${escapedUrl}"><div id="reader-status" role="status">Loading document…</div><main id="reader" aria-label="Document pages"></main><script src="/resource-source/js/pdf.min.js"></script><script src="/reader-vertical.js"></script>${readyScript}</body></html>`;
-    const html = `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/resource-source/css/flipbook.style.css"><link rel="stylesheet" href="/resource-source/css/font-awesome.css"><link rel="stylesheet" href="/viewer-frame.css"></head><body><div id="reader"></div>${pdfRenderSignalScript}<script src="/resource-source/js/jquery.js"></script><script src="/resource-source/js/flipbook.min.js"></script><script>var downloadUrl=${JSON.stringify(pdfSrc).replace(/</g, '\\u003c')};jQuery('#reader').flipBook(${options}); function labelControls(){document.querySelectorAll('.flipbook-right-arrow,.flipbook-left-arrow').forEach(function(el){el.title=el.classList.contains('flipbook-right-arrow')?'Next page':'Previous page'});var input=document.querySelector('.flipbook-currentPageInput');if(input)input.setAttribute('aria-label','Go to page');document.querySelectorAll('[title]:not([data-accessible])').forEach(function(el){el.dataset.accessible='true';el.setAttribute('aria-label',el.title);if(el.matches('[title]')){el.setAttribute('role','button');el.tabIndex=0;el.addEventListener('keydown',function(event){if(event.key==='Enter'||event.key===' '){event.preventDefault();el.click();}})}})}function bindDownload(){var button=document.querySelector('span[data-name="btnDownloadPdf"]');if(!button||button.dataset.downloadBound)return;button.dataset.downloadBound='true';jQuery(button).off('touchend click').on('touchend click',function(event){event.preventDefault();event.stopPropagation();parent.postMessage({type:'sharebility:download',url:downloadUrl},'*')})}labelControls();bindDownload();new MutationObserver(function(){labelControls();bindDownload()}).observe(document.getElementById('reader'),{childList:true,subtree:true});</script>${readyScript}</body></html>`;
+    const verticalHtml = `<!doctype html><html class="vertical-reader"><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/viewer-frame.css"></head><body data-pdf-url="${escapedUrl}"><div id="reader-status" role="status">Loading document…</div><main id="reader" aria-label="Document pages"></main><script src="/resource-source/js/pdf.min.js"></script><script src="/reader-vertical.js"></script>${readerReadyScript}</body></html>`;
+    const html = `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/resource-source/css/flipbook.style.css"><link rel="stylesheet" href="/resource-source/css/font-awesome.css"><link rel="stylesheet" href="/viewer-frame.css"></head><body><div id="reader"></div><script src="/resource-source/js/jquery.js"></script><script src="/resource-source/js/flipbook.min.js"></script><script>var downloadUrl=${JSON.stringify(pdfSrc).replace(/</g, '\\u003c')};jQuery('#reader').flipBook(${options}); function labelControls(){document.querySelectorAll('.flipbook-right-arrow,.flipbook-left-arrow').forEach(function(el){el.title=el.classList.contains('flipbook-right-arrow')?'Next page':'Previous page'});var input=document.querySelector('.flipbook-currentPageInput');if(input)input.setAttribute('aria-label','Go to page');document.querySelectorAll('[title]:not([data-accessible])').forEach(function(el){el.dataset.accessible='true';el.setAttribute('aria-label',el.title);if(el.matches('[title]')){el.setAttribute('role','button');el.tabIndex=0;el.addEventListener('keydown',function(event){if(event.key==='Enter'||event.key===' '){event.preventDefault();el.click();}})}})}function bindDownload(){var button=document.querySelector('span[data-name="btnDownloadPdf"]');if(!button||button.dataset.downloadBound)return;button.dataset.downloadBound='true';jQuery(button).off('touchend click').on('touchend click',function(event){event.preventDefault();event.stopPropagation();parent.postMessage({type:'sharebility:download',url:downloadUrl},'*')})}labelControls();bindDownload();new MutationObserver(function(){labelControls();bindDownload()}).observe(document.getElementById('reader'),{childList:true,subtree:true});</script>${readerReadyScript}</body></html>`;
     return <div ref={reader} className={`document-reader${expanded ? ' document-reader-expanded' : ''}`}>
       <div className="document-reader-toolbar" role="toolbar" aria-label="Document viewer controls">
         {viewer.kind === 'pdf' && <div className="document-reader-modes" role="group" aria-label="Reading mode">
