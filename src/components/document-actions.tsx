@@ -1,7 +1,7 @@
 import { convertedPdfUrl } from '@/lib/converted-documents';
 import { downloadFile } from '@/lib/file-download';
 import { useState } from 'react';
-import { Download, LoaderCircle, Check, Link2 } from 'lucide-react';
+import { Download, LoaderCircle, Check, Link2, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
@@ -46,7 +46,7 @@ export function DocumentShare({ item }: { item: ResourceRecord }) {
   };
   return <DropdownMenu>
     <DropdownMenuTrigger asChild>
-      <Button variant="source" size="source" className="dg-action dg-share" aria-label={`Share ${title}`}>Share</Button>
+      <Button variant="source" size="source" className="dg-action dg-share" aria-label={`Share ${title}`}><Share2 size={16} /> Share</Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end" className="w-52">
       <DropdownMenuItem onSelect={() => void copy()}>{copied ? <Check size={16} /> : <Link2 size={16} />} Copy link</DropdownMenuItem>
