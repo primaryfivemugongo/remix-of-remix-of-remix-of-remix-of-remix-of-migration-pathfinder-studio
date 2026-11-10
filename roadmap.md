@@ -45,3 +45,7 @@
 ## Document information refinement
 - [x] Move document facts beneath the viewer, remove the uploader line and use labelled facts instead of prose.
 - [x] Keep "About this document" always visible and drop the FAQs section, then verify on desktop and phone.
+
+## PDF loading
+- [ ] Restore the original flipbook's native loading lifecycle without a dark flash.
+- [ ] Make detail-page readiness survive early iframe loading and verify both reading modes and repeated opening.

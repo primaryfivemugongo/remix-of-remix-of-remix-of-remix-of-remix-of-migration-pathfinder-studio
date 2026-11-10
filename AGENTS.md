@@ -39,3 +39,4 @@ use the editor.
 - Keep document information presentation separate from search descriptions and pass measured file size into it; show the labelled facts always visible under a plain heading, with no collapsible sections or repeated question-and-answer list.
 - Keep temporary import inspection screenshots and browser captures outside the repository; preserve catalog-source fixtures because regression tests compare original records and ordering.
 - Class "More Documents" dropdowns list Fresh-Teacher GitHub repos from one static map and load repo files in the browser from the public GitHub tree API; this keeps the catalog static and avoids a server rate-limit bottleneck.
+- Let the flipbook's native preloader own page loading; retain iframe readiness and check native completion in the parent so early messages cannot leave a loader stuck.

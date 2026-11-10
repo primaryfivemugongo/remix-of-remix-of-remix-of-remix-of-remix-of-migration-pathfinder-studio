@@ -10,4 +10,5 @@ html.vertical-reader { height:100%; overflow:auto; }
 .vertical-reader #reader { width:100%; height:auto; overflow:visible; box-sizing:border-box; padding:12px; display:flex; flex-direction:column; gap:12px; }
 .vertical-reader-page { width:100%; max-width:900px; margin:0 auto; flex:none; background:var(--reader-paper); color:var(--reader-ink); text-align:center; overflow:hidden; }
 .vertical-reader-page canvas { display:block; width:100%; height:auto; }
-#reader-status { padding:12px; font-family:Arial,sans-serif; color:var(--reader-ink); }.flipbook-preloader { display:none !important; }
+#reader-status { padding:12px; font-family:Arial,sans-serif; color:var(--reader-ink); }
+.flipbook-preloader { background:var(--reader-surface); }
