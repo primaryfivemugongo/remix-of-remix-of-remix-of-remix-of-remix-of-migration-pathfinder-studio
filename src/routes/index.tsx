@@ -79,7 +79,11 @@ export function Index() {
           if (doorOpen) return;
           setDoorOpen(true);
           const audio = document.getElementById("audiocracker");
-          if (audio instanceof HTMLAudioElement) void audio.play().catch(() => {});
+          if (audio instanceof HTMLAudioElement) {
+            // The early tap handler may already have started the sound inside the tap.
+            if (audio.hasAttribute("data-early-played")) audio.removeAttribute("data-early-played");
+            else void audio.play().catch(() => {});
+          }
         };
         changes["onClick"] = open;
         changes["onTouchStart"] = absorbTouch;

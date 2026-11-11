@@ -60,6 +60,24 @@ describe('early door', () => {
   });
 });
 
+describe('early door sound', () => {
+  it('starts the door sound inside the tap, before the page is ready', () => {
+    vi.useFakeTimers();
+    installEarlyTapQueue();
+    document.body.innerHTML = '<audio id="audiocracker"></audio><div class="rope" role="button"></div>';
+    const audio = document.getElementById('audiocracker') as HTMLAudioElement;
+    const play = vi.fn(() => Promise.resolve());
+    audio.play = play;
+    document.documentElement.removeAttribute('data-early-door');
+    document.querySelector<HTMLElement>('.rope')!.click();
+    expect(play).toHaveBeenCalledTimes(1);
+    expect(audio.hasAttribute('data-early-played')).toBe(true);
+    vi.advanceTimersByTime(21000);
+    document.documentElement.removeAttribute('data-early-door');
+    vi.useRealTimers();
+  });
+});
+
 describe('early dropdown display', () => {
   it('shows the tapped dropdown list immediately before the page is ready', () => {
     installEarlyTapQueue();

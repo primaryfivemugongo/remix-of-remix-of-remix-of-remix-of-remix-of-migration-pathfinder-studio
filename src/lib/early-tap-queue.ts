@@ -59,6 +59,16 @@ export function installEarlyTapQueue() {
     if (root.hasAttribute('data-early-door')) return;
     root.setAttribute('data-early-door', '');
     unlockShelves();
+    // Browsers only allow sound that starts inside the tap itself, so play it here
+    // instead of waiting for the replayed tap, which runs from a timer.
+    var audio = document.getElementById('audiocracker') as HTMLAudioElement | null;
+    if (audio && typeof audio.play === 'function') {
+      audio.setAttribute('data-early-played', '');
+      try {
+        var started = audio.play();
+        if (started && typeof started.catch === 'function') started.catch(function () { audio!.removeAttribute('data-early-played'); });
+      } catch (error) { audio.removeAttribute('data-early-played'); }
+    }
   };
   try {
     // Returning visitors never see the door again, so skip it before the first paint.
