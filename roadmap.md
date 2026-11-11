@@ -49,3 +49,7 @@
 ## PDF loading
 - [x] Restore the original flipbook's native loading lifecycle without a dark flash.
 - [x] Make detail-page readiness survive early iframe loading and verify both reading modes and repeated opening.
+
+## Menu loading
+- [x] Replace document-card placeholders on selection pages with title and dropdown shapes.
+- [ ] Verify loading and finished menu pages on phone and desktop while retaining document-list placeholders.
