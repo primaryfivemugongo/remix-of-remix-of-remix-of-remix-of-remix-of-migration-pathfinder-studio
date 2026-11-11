@@ -3,7 +3,7 @@ import { homepageShelves } from '@/data/homepage-shelves';
 import { Children, cloneElement, isValidElement, useEffect, useRef, useState, type CSSProperties, type ReactNode, type ReactElement } from "react";
 import repairCSS from "../styles/import-repairs.css?raw";
 import { createFileRoute } from "@tanstack/react-router";
-import capturedCSS from "../styles/captured.css?raw";
+import capturedCssUrl from "../styles/captured.css?url";
 
 const ImportedFont = "font" as unknown as import("react").ElementType;
 const ImportedMarquee = "marquee" as unknown as import("react").ElementType;
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/")({
     { property: "og:description", content: "Explore nursery, primary and secondary school learning resources from Fresh Teacher." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },
-  ] }),
+  ], links: [{ rel: "stylesheet", href: capturedCssUrl }] }),
   component: Index,
 });
 
@@ -114,7 +114,6 @@ export function Index() {
   }
   return repair(
     <div className="library-homepage">
-      <style>{capturedCSS}</style>
       <style>{repairCSS}</style>
       <div className={"leftcurtain"}>
         <img src="/site-assets/7c2eea45ca9862de.png" />

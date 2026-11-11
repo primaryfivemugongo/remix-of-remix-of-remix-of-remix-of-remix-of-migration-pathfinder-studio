@@ -46,6 +46,20 @@ describe('early tap queue', () => {
   });
 });
 
+describe('early door', () => {
+  it('opens the door and unlocks the shelves on a tap made before the page is ready', () => {
+    vi.useFakeTimers();
+    installEarlyTapQueue();
+    document.body.innerHTML = '<div class="leftcurtain" role="button"></div><div class="page-wrapper" inert></div>';
+    document.querySelector<HTMLElement>('.leftcurtain')!.click();
+    expect(document.documentElement.hasAttribute('data-early-door')).toBe(true);
+    expect(document.querySelector('.page-wrapper')!.hasAttribute('inert')).toBe(false);
+    vi.advanceTimersByTime(21000);
+    document.documentElement.removeAttribute('data-early-door');
+    vi.useRealTimers();
+  });
+});
+
 describe('early dropdown display', () => {
   it('shows the tapped dropdown list immediately before the page is ready', () => {
     installEarlyTapQueue();
