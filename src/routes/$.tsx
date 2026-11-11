@@ -1,5 +1,6 @@
 import { DocumentsSkeleton } from '@/components/documents-skeleton';
-import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
+import { MenuSkeleton } from '@/components/menu-skeleton';
+import { createFileRoute, notFound, redirect, useRouterState } from '@tanstack/react-router';
 import { ResourcePage } from '@/components/resource-page';
 import manifest from '@/data/resource-manifest.json';
 import type { ResourcePageData } from '@/lib/resources';
@@ -65,10 +66,17 @@ export const Route = createFileRoute('/$')({
       ...(!loaderData ? [{ name: 'robots', content: 'noindex' }] : []),
     ], links: loaderData ? (loaderData.kind === 'legacy' ? loaderData.data.links : resourceStylesheets).map(href => ({ rel: 'stylesheet', href })) : [] };
   },
-  pendingComponent: DocumentsSkeleton,
+  pendingComponent: PageSkeleton,
   pendingMs: 0,
   component: LegacyResource,
 });
+
+function PageSkeleton() {
+  const pathname = useRouterState({ select: state => state.location.pathname });
+  const path = pathname.replace(/^\/+|\/+$/g, '');
+  const entry = legacyManifest[path as keyof typeof legacyManifest];
+  return entry?.count === 0 ? <MenuSkeleton /> : <DocumentsSkeleton />;
+}
 
 function LegacyResource() {
   const result = Route.useLoaderData();
@@ -79,7 +87,7 @@ function LegacyResource() {
   return (
     <>
       {!ready && <div className="route-progress" role="progressbar" aria-label="Loading page" />}
-      {!ready && <div className="documents-skeleton-overlay"><DocumentsSkeleton /></div>}
+      {!ready && <div className="documents-skeleton-overlay"><PageSkeleton /></div>}
       <div className={ready ? 'route-fade route-fade--in' : 'route-fade'}>{page}</div>
     </>
   );
