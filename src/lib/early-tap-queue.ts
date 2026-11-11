@@ -49,10 +49,40 @@ export function installEarlyTapQueue() {
     }
     return true;
   };
+  // The homepage door is server-rendered, so it can be opened by CSS alone while the page loads.
+  var root = document.documentElement;
+  var unlockShelves = function () {
+    var shelves = document.querySelector('.page-wrapper');
+    if (shelves && root.hasAttribute('data-early-door')) shelves.removeAttribute('inert');
+  };
+  var openDoorEarly = function () {
+    if (root.hasAttribute('data-early-door')) return;
+    root.setAttribute('data-early-door', '');
+    unlockShelves();
+    // Browsers only allow sound that starts inside the tap itself, so play it here
+    // instead of waiting for the replayed tap, which runs from a timer.
+    var audio = document.getElementById('audiocracker') as HTMLAudioElement | null;
+    if (audio && typeof audio.play === 'function') {
+      audio.setAttribute('data-early-played', '');
+      try {
+        var started = audio.play();
+        if (started && typeof started.catch === 'function') started.catch(function () { audio!.removeAttribute('data-early-played'); });
+      } catch (error) { audio.removeAttribute('data-early-played'); }
+    }
+  };
+  try {
+    // Returning visitors never see the door again, so skip it before the first paint.
+    if (sessionStorage.getItem('library-door-open') === '1') {
+      root.setAttribute('data-early-door', '');
+      document.addEventListener('DOMContentLoaded', unlockShelves);
+    }
+  } catch (error) { /* storage unavailable */ }
   if (!document.getElementById('ft-early-open-style')) {
     var style = document.createElement('style');
     style.id = 'ft-early-open-style';
-    style.textContent = 'html body [data-early-open]>.dropdown-menu,html body [data-early-open]>.dropdown-menu[hidden]{display:block!important;visibility:visible!important;opacity:1!important}';
+    style.textContent = 'html body [data-early-open]>.dropdown-menu,html body [data-early-open]>.dropdown-menu[hidden]{display:block!important;visibility:visible!important;opacity:1!important}'
+      + 'html[data-early-door] .leftcurtain,html[data-early-door] .rightcurtain{width:1px!important}'
+      + 'html[data-early-door] .rope{top:-171%!important}';
     (document.head || document.documentElement).appendChild(style);
   }
   var replay = function () {
@@ -74,6 +104,7 @@ export function installEarlyTapQueue() {
     if (!control || ready(control)) return;
     event.preventDefault();
     event.stopImmediatePropagation();
+    if (control.closest('.leftcurtain,.rightcurtain,.rope')) openDoorEarly();
     var waiting = pending !== null;
     // A second tap on an early-opened menu closes it and cancels the queued tap.
     if (!showEarly(control)) { pending = null; return; }

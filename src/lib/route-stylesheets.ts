@@ -31,6 +31,35 @@ function sweep() {
   });
 }
 
+const warmed = new Map<string, Promise<void>>();
+
+// Downloads a route's stylesheets into the HTTP cache without applying them, so a
+// loader can fetch CSS in parallel with its data. Applying them early would leak
+// their cascade onto the page still on screen (and onto hover-preloaded routes),
+// so only the hook above ever attaches a real stylesheet. Never rejects; a slow or
+// failed download just resolves after the timeout and the hook's own wait takes over.
+export function warmRouteStylesheets(hrefs: string[], timeoutMs = 2500): Promise<void> {
+  if (typeof document === 'undefined') return Promise.resolve();
+  return Promise.all(hrefs.map((href) => {
+    if (linksFor(href).some((link) => link.sheet)) return Promise.resolve();
+    let request = warmed.get(href);
+    if (!request) {
+      request = new Promise<void>((resolve) => {
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = 'style';
+        link.href = href;
+        link.addEventListener('load', () => resolve(), { once: true });
+        link.addEventListener('error', () => resolve(), { once: true });
+        setTimeout(resolve, timeoutMs);
+        document.head.appendChild(link);
+      });
+      warmed.set(href, request);
+    }
+    return request;
+  })).then(() => undefined);
+}
+
 // Returns false while any of this page's stylesheets is still downloading so the
 // caller can keep the page hidden instead of painting an unstyled frame.
 export function useRouteStylesheets(hrefs: string[]) {

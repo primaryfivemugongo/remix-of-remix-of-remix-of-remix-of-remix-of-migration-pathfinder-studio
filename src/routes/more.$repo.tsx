@@ -4,7 +4,7 @@ import { LegacyPage } from '@/components/legacy-page';
 import legacyManifest from '@/data/legacy/manifest.json';
 import type { LegacyPageData } from '@/lib/legacy-pages';
 import type { StaticPage } from '@/lib/static-catalog';
-import { useRouteStylesheets } from '@/lib/route-stylesheets';
+import { useRouteStylesheets, warmRouteStylesheets } from '@/lib/route-stylesheets';
 import { findMoreDocumentsRepo } from '@/data/more-documents';
 import { fetchRepoDocuments } from '@/lib/github-repo-documents';
 
@@ -33,8 +33,13 @@ export const Route = createFileRoute('/more/$repo')({
     };
     let items: LegacyPageData['items'] = [];
     let missingData: string | null = null;
-    await Promise.all([read(base.template), read(base.styles)]);
-    try { items = await fetchRepoDocuments(entry.repo); } catch { missingData = 'unavailable'; }
+    // The GitHub listing is the slowest step, so start it alongside the template, fragments and CSS.
+    await Promise.all([
+      read(base.template),
+      read(base.styles),
+      warmRouteStylesheets(base.links),
+      fetchRepoDocuments(entry.repo).then(documents => { items = documents; }, () => { missingData = 'unavailable'; }),
+    ]);
     const title = `${entry.label} | Fresh Teacher`;
     const data: LegacyPageData = { ...base, title, description: `${entry.label} from Fresh Teacher's Library.`, items, missingData };
     return { repo: entry.repo, data, fragments };
@@ -51,8 +56,9 @@ export const Route = createFileRoute('/more/$repo')({
       links: (loaderData?.data.links ?? []).map(href => ({ rel: 'stylesheet', href })),
     };
   },
+  staleTime: 5 * 60 * 1000,
+  preloadStaleTime: 5 * 60 * 1000,
   pendingComponent: DocumentsSkeleton,
-  pendingMs: 0,
   component: MoreDocumentsPage,
 });
 
@@ -61,7 +67,6 @@ function MoreDocumentsPage() {
   const ready = useRouteStylesheets(result.data.links);
   return (
     <>
-      {!ready && <div className="route-progress" role="progressbar" aria-label="Loading page" />}
       {!ready && <div className="documents-skeleton-overlay"><DocumentsSkeleton /></div>}
       <div className={ready ? 'route-fade route-fade--in' : 'route-fade'}>
         <LegacyPage key={result.repo} data={result.data} fragments={result.fragments} />
