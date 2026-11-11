@@ -1,5 +1,5 @@
 import { DocumentsSkeleton } from '@/components/documents-skeleton';
-import { MenuSkeleton } from '@/components/menu-skeleton';
+import { MenuSkeleton, menuVariantFor } from '@/components/menu-skeleton';
 import { createFileRoute, notFound, redirect, useRouterState } from '@tanstack/react-router';
 import { ResourcePage } from '@/components/resource-page';
 import manifest from '@/data/resource-manifest.json';
@@ -86,7 +86,7 @@ function PageSkeleton() {
   const pathname = useRouterState({ select: state => state.location.pathname });
   const path = pathname.replace(/^\/+|\/+$/g, '');
   const entry = legacyManifest[path as keyof typeof legacyManifest];
-  return entry?.count === 0 ? <MenuSkeleton /> : <DocumentsSkeleton />;
+  return entry?.count === 0 ? <MenuSkeleton variant={menuVariantFor(path)} /> : <DocumentsSkeleton />;
 }
 
 function LegacyResource() {
