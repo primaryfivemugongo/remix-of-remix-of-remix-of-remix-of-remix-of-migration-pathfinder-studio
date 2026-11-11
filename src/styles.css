@@ -430,20 +430,11 @@ a, button, [role="button"], summary, label { touch-action: manipulation; -webkit
 @keyframes route-progress-grow { from { width: 0; } to { width: 85%; } }
 .bookshelf a:active, .covers a:active, .book:active { transform: scale(0.96); filter: brightness(0.9); transition: transform 80ms ease, filter 80ms ease; }
 
-/* Route stylesheet loading: slim top progress bar + gentle fade-in */
-.route-progress {
-  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 9999;
-  overflow: hidden; pointer-events: none; background: color-mix(in oklch, var(--primary) 20%, transparent);
-}
-.route-progress::before {
-  content: ""; position: absolute; inset: 0 auto 0 0; width: 40%;
-  background: var(--primary); animation: route-progress-slide 1s ease-in-out infinite;
-}
-@keyframes route-progress-slide { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+/* Route stylesheet loading: gentle fade-in once the page's CSS is applied */
 .route-fade { opacity: 0; }
 .route-fade--in { opacity: 1; transition: opacity 180ms ease-out; }
 @media (prefers-reduced-motion: reduce) {
-  .route-progress::before { animation: none; width: 100%; }
+  .route-progress.is-active { animation-duration: 0.01ms; }
   .route-fade--in { transition: none; }
 }
 
@@ -510,7 +501,7 @@ a, button, [role="button"], summary, label { touch-action: manipulation; -webkit
 .legacy-page > .container > br { display: none; }
 .legacy-page .dg-search { margin-top: 0.5rem; }
 
-.documents-skeleton { min-height: 100vh; padding: 0.75rem 1rem 2rem; max-width: 1140px; margin: 0 auto; }
+.documents-skeleton { box-sizing: border-box; min-height: calc(100dvh - var(--library-appbar-height)); padding: 0.75rem 1rem 2rem; max-width: 1140px; margin: 0 auto; }
 .documents-skeleton__search { height: 44px; border-radius: 999px; background: var(--muted); margin-bottom: 1rem; }
 .documents-skeleton__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
 .documents-skeleton__card { border-radius: 12px; border: 0; padding: 0.5rem; background: var(--card); }

@@ -8,7 +8,7 @@ import { LegacyPage } from '@/components/legacy-page';
 import legacyManifest from '@/data/legacy/manifest.json';
 import type { LegacyPageData } from '@/lib/legacy-pages';
 import { resolveDocuments, type DocumentShard, type StaticPage } from '@/lib/static-catalog';
-import { useRouteStylesheets } from '@/lib/route-stylesheets';
+import { useRouteStylesheets, warmRouteStylesheets } from '@/lib/route-stylesheets';
 import { MORE_DOCUMENTS, moreDocumentsClass } from '@/data/more-documents';
 
 const moreFor = (path: string) => { const key = moreDocumentsClass(path); return key ? MORE_DOCUMENTS[key] : undefined; };
@@ -39,7 +39,7 @@ export const Route = createFileRoute('/$')({
       if (!legacy) throw notFound();
       const load = legacyPages[`../data/catalog/pages/legacy/${legacy.data}`];
       if (!load) throw notFound();
-      const data = await hydratePage<LegacyPageData>((await load()).default);
+      const page = (await load()).default;
       const fragments: Record<string, string> = {};
       const read = async (key: string): Promise<void> => {
         if (key in fragments) return;
@@ -49,13 +49,25 @@ export const Route = createFileRoute('/$')({
         fragments[key] = text;
         await Promise.all(Array.from(text.matchAll(/data-key="([^"]+)"/g), match => read(match[1] ?? '')));
       };
-      await Promise.all([read(data.template), read(data.styles)]);
+      // Document shards, HTML fragments and the page's CSS are independent, so fetch them together.
+      const [data] = await Promise.all([
+        hydratePage<LegacyPageData>(page),
+        Promise.all([read(page.template), read(page.styles)]),
+        warmRouteStylesheets(page.links),
+      ]);
       return { path, kind: 'legacy' as const, data, fragments };
     }
     const load = pages[`../data/catalog/pages/resources/${entry.data}`];
     if (!load) throw notFound();
-    return { path, kind: 'resource' as const, data: await hydratePage<ResourcePageData>((await load()).default) };
+    const [data] = await Promise.all([
+      load().then(module => hydratePage<ResourcePageData>(module.default)),
+      warmRouteStylesheets(resourceStylesheets),
+    ]);
+    return { path, kind: 'resource' as const, data };
   },
+  // The catalog is static, so loaded pages never go stale; back/forward and hover-preloaded pages skip the skeleton.
+  staleTime: Infinity,
+  preloadStaleTime: Infinity,
   head: ({ loaderData }) => {
     const title = loaderData?.data.title ?? 'Resource unavailable | Fresh Teacher';
     const description = loaderData?.data.description ?? 'The requested Fresh Teacher resource page is unavailable.';
@@ -67,7 +79,6 @@ export const Route = createFileRoute('/$')({
     ], links: loaderData ? (loaderData.kind === 'legacy' ? loaderData.data.links : resourceStylesheets).map(href => ({ rel: 'stylesheet', href })) : [] };
   },
   pendingComponent: PageSkeleton,
-  pendingMs: 0,
   component: LegacyResource,
 });
 
@@ -86,7 +97,6 @@ function LegacyResource() {
     : <ResourcePage key={result.path} data={result.data} />;
   return (
     <>
-      {!ready && <div className="route-progress" role="progressbar" aria-label="Loading page" />}
       {!ready && <div className="documents-skeleton-overlay"><PageSkeleton /></div>}
       <div className={ready ? 'route-fade route-fade--in' : 'route-fade'}>{page}</div>
     </>

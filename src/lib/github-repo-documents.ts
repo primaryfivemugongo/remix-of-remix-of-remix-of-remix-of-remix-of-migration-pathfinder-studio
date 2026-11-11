@@ -4,6 +4,7 @@ import { isDocumentFile } from './document-formats';
 const OWNER = 'Fresh-Teacher';
 const CACHE_PREFIX = 'repo-docs:v2:';
 const CACHE_TTL = 24 * 60 * 60 * 1000;
+const FETCH_TIMEOUT = 8000;
 
 /** GitHub Pages (Jekyll) hides files and folders starting with these characters. */
 const HIDDEN_BY_PAGES = /^[_.#~]/;
@@ -42,20 +43,30 @@ export function cachedRepos(): string[] {
   } catch { return []; }
 }
 
-export async function fetchRepoDocuments(repo: string): Promise<ResourceRecord[]> {
-  const fresh = readCache(repo);
-  if (fresh) return fresh;
+async function downloadRepoDocuments(repo: string): Promise<ResourceRecord[]> {
+  // Without a deadline, a stalled connection would keep the page skeleton up forever.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
   try {
-    const response = await fetch(`https://api.github.com/repos/${OWNER}/${encodeURIComponent(repo)}/git/trees/HEAD?recursive=1`, { headers: { Accept: 'application/vnd.github+json', ...(typeof window === 'undefined' ? { 'User-Agent': 'fresh-teacher-library' } : {}) } });
+    const response = await fetch(`https://api.github.com/repos/${OWNER}/${encodeURIComponent(repo)}/git/trees/HEAD?recursive=1`, { signal: controller.signal, headers: { Accept: 'application/vnd.github+json', ...(typeof window === 'undefined' ? { 'User-Agent': 'fresh-teacher-library' } : {}) } });
     if (!response.ok) throw new Error(`GitHub responded ${response.status}`);
     const body = await response.json() as { tree?: { path: string; type: string }[] };
     const items = treeToDocuments(repo, body.tree ?? []);
     try { localStorage.setItem(CACHE_PREFIX + repo, JSON.stringify({ at: Date.now(), items })); } catch { /* quota */ }
     return items;
-  } catch (error) {
-    // Rate-limited or offline: fall back to an older saved copy when there is one.
-    const stale = readCache(repo, true);
-    if (stale) return stale;
-    throw error;
+  } finally {
+    clearTimeout(timer);
   }
+}
+
+export async function fetchRepoDocuments(repo: string): Promise<ResourceRecord[]> {
+  const fresh = readCache(repo);
+  if (fresh) return fresh;
+  // Stale-while-revalidate: show the saved list immediately and refresh it for next time.
+  const stale = readCache(repo, true);
+  if (stale) {
+    void downloadRepoDocuments(repo).catch(() => undefined);
+    return stale;
+  }
+  return downloadRepoDocuments(repo);
 }

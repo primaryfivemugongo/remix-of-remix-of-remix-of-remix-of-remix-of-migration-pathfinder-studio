@@ -66,12 +66,24 @@ export function LibraryShell({ children }: { children: ReactNode }) {
     const path = url.pathname === '/index.html' ? '/' : url.pathname;
     void router.navigate({ href: path + url.search + url.hash });
   }, [router]);
+  // Captured links are plain anchors, so the router can't preload them itself: warm the target on hover or touch.
+  const lastPreloaded = useRef('');
+  const preloadLink = useCallback((event: { target: EventTarget }) => {
+    const anchor = (event.target as Element).closest?.('a[href]') as HTMLAnchorElement | null;
+    if (!anchor || anchor.target === '_blank' || anchor.hasAttribute('download')) return;
+    const url = new URL(anchor.href, window.location.href);
+    if (url.origin !== window.location.origin || url.pathname === window.location.pathname) return;
+    if (/\.[a-z0-9]+$/i.test(url.pathname) && !/\.html?$/i.test(url.pathname)) return;
+    if (lastPreloaded.current === url.pathname) return;
+    lastPreloaded.current = url.pathname;
+    router.preloadRoute({ to: url.pathname }).catch(() => undefined);
+  }, [router]);
   const toggle = useCallback(() => {
     setProfileOpen(false);
     if (window.matchMedia('(max-width: 767px)').matches) setMobileOpen(value => !value);
     else setDesktopClosed(value => !value);
   }, []);
-  return <div onClick={interceptLinks} className={`library-shell ${mobileOpen ? 'library-mobile-open' : ''} ${desktopClosed ? 'library-desktop-closed' : ''}`}>
+  return <div onClick={interceptLinks} onPointerOver={preloadLink} onTouchStart={preloadLink} className={`library-shell ${mobileOpen ? 'library-mobile-open' : ''} ${desktopClosed ? 'library-desktop-closed' : ''}`}>
     <RouteProgress />
     <AppBar triggerRef={trigger} menuExpanded={isMobile ? mobileOpen : !desktopClosed} profileOpen={profileOpen} onToggleMenu={toggle} onToggleProfile={toggleProfile} onCloseProfile={closeProfile} />
     <SideDrawer mobileOpen={mobileOpen} pathname={pathname} openPath={openPath} onClose={closeMobile} onCloseAndFocus={closeMobileAndFocus} onToggleBranch={toggleBranch} onNavigate={navigate} />
